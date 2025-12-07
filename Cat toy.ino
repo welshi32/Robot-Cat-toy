@@ -9,32 +9,36 @@ int angle = 0;
 bool toyActive = 0;
 
 Servo toy;
+
 void setup() {
   Serial.begin(9600);
+  pinMode(PIR, INPUT);      // IMPORTANT
   toy.attach(SERVO_PIN);
 }
 
 void loop() {
-  if(digitalRead(PIR) == HIGH) {
-    toyActive = 1;
-  }
-  else {
-    delay(random(1000, 10000));
-    toyActive = 0;
-  }
-  if(toyActive == 1) {
+
+  toyActive = digitalRead(PIR);   // 1 or 0
+
+  if (toyActive) {
     toyActivate();
+  } else {
+    toy.write(90);  // neutral or "off" position
+    delay(50);      // tiny delay so loop doesn't spam
   }
 }
+
 void toyActivate() {
   wait = random(800, 4000);
-  angle = random(-1, 181);
-  if(DEBUG == true) {
-    Serial.println("Angle: ");
+  angle = random(0, 180);
+
+  if (DEBUG) {
+    Serial.print("Angle: ");
     Serial.print(angle);
-    Serial.print(", Delay:");
-    Serial.print(wait);
-  } 
+    Serial.print("  Delay: ");
+    Serial.println(wait);
+  }
+
   toy.write(angle);
   delay(wait);
 }
